@@ -26,10 +26,11 @@ int	main(int argc, char **argv)
 	return (0);
 }
 
-//convert message into bits
+//convert message into bits - from least to most significant
 
 //send signal (kill)
 
 //give time for server to process (usleep(100))
 
 //BONUS receive message receipt from server
+//Create a stop condition

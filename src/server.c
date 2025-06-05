@@ -12,22 +12,42 @@
 
 #include "../include/minitalk.h"
 
-int	main(void)
+static void	handler(int sig, siginfo_t *info, void *context)
 {
-	ft_printf("PID: %d\n", getpid());
-	
-	return (0);
+	static unsigned char	c;
+	static int				i;
+
+	(void)context;
+	if (sig == SIGUSR2)
+		c |= (1 << i);
+	i++;
+	if (i == 8)
+	{
+		ft_printf("%c", c);
+		i = 0;
+		c = 0;
+		if (c == '\0')
+		{
+			ft_printf("\n");
+			//BONUS
+			kill(info->si_pid, SIGUSR2);
+		}
+	}
 }
 
+int	main(void)
+{
+	struct sigaction	sa;
 
-//process bits with handler function (sigaction())
-//mask other signall using sigset_t mask, sigemptyset and sigaddset
-
-//wait for signal (pause())
-
-//reconstruct message - bit to chars (handler function) 
-// BONUS handle unicode characters
-
-
-//print message
-//BONUS acknowledge message receipt by sending a signal to client
+	ft_printf("Server PID: %d\n", getpid());
+	sa.sa_sigaction = handler;
+	sa.sa_flags = SA_SIGINFO;
+	sigemptyset(&sa.sa_mask);
+	sigaddset(&sa.sa_mask, SIGUSR1);
+	sigaddset(&sa.sa_mask, SIGUSR2);
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
+	while (1)
+		pause();
+	return (0);
+}
