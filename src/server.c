@@ -24,13 +24,9 @@ static void	handler(int sig, siginfo_t *info, void *context)
 	if (bit == 8)
 	{
 		write(1, &c, 1);
-		bit = 0;
 		if (c == '\0')
-		{
-			write(1, "\n", 1);
-			//BONUS
 			kill(info->si_pid, SIGUSR2);
-		}
+		bit = 0;
 		c = 0;
 	}
 }
@@ -43,8 +39,6 @@ int	main(void)
 	sa.sa_sigaction = handler;
 	sa.sa_flags = SA_SIGINFO;
 	sigemptyset(&sa.sa_mask);
-	sigaddset(&sa.sa_mask, SIGUSR1);
-	sigaddset(&sa.sa_mask, SIGUSR2);
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
