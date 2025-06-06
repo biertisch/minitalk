@@ -43,6 +43,25 @@ static void	send_message(pid_t server_pid, char *message)
 	usleep(500);
 }
 
+static void	handler(int sig)
+{
+	if (sig == SIGUSR2)
+	{
+		ft_printf("Message received.\n");
+		exit(0);
+	}
+}
+
+static void	signal_setup(void)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = handler;
+	sa.sa_flags = 0;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGUSR2, &sa, NULL);
+}
+
 int	main(int argc, char **argv)
 {
 	pid_t			server_pid;
@@ -52,6 +71,7 @@ int	main(int argc, char **argv)
 		ft_printf("Usage: ./client <server_pid> <message>\n");
 		return (1);
 	}
+	signal_setup();
 	server_pid = ft_atoi(argv[1]);
 	if (server_pid < 10 || kill(server_pid, 0) == -1)
 	{
