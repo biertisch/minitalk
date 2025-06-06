@@ -15,23 +15,23 @@
 static void	handler(int sig, siginfo_t *info, void *context)
 {
 	static unsigned char	c;
-	static int				i;
+	static int				bit;
 
 	(void)context;
 	if (sig == SIGUSR2)
-		c |= (1 << i);
-	i++;
-	if (i == 8)
+		c |= (1 << bit);
+	bit++;
+	if (bit == 8)
 	{
-		ft_printf("%c", c);
-		i = 0;
-		c = 0;
+		write(1, &c, 1);
+		bit = 0;
 		if (c == '\0')
 		{
-			ft_printf("\n");
+			write(1, "\n", 1);
 			//BONUS
 			kill(info->si_pid, SIGUSR2);
 		}
+		c = 0;
 	}
 }
 

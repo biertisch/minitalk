@@ -59,12 +59,11 @@ char	*ft_itoa_base(uintptr_t n, char *base)
 	if (!buffer)
 		return (NULL);
 	buffer[digits] = '\0';
-	while (digits > 9)
+	while (digits > 0)
 	{
 		digits--;
 		buffer[digits] = base[n % base_size];
 		n /= base_size;
 	}
-	buffer[--digits] = base[n];
 	return (buffer);
 }
