@@ -12,6 +12,8 @@
 
 #include "../include/minitalk.h"
 
+volatile sig_atomic_t	g_ack = 0;
+
 static void	send_bits(pid_t server_pid, char c)
 {
 	unsigned int	bit;
@@ -19,33 +21,37 @@ static void	send_bits(pid_t server_pid, char c)
 	bit = 0;
 	while (bit < 8)
 	{
+		g_ack = 0;
 		if (c & (1 << bit))
 			kill(server_pid, SIGUSR2);
 		else
 			kill(server_pid, SIGUSR1);
 		bit++;
-		usleep(500);
+		while (!g_ack)
+			usleep(10);
 	}
 }
 
-static void	send_message(pid_t server_pid, char *message)
+static void	handler(int sig)
 {
-	unsigned int	i;
+	if (sig == SIGUSR1)
+		g_ack = 1;
+}
 
-	i = 0;
-	while (message[i])
-	{
-		send_bits(server_pid, message[i]);
-		i++;
-	}
-	send_bits(server_pid, '\n');
-	send_bits(server_pid, '\0');
-	usleep(500);
+static void	signal_setup(void)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = handler;
+	sa.sa_flags = 0;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGUSR1, &sa, NULL);
 }
 
 int	main(int argc, char **argv)
 {
 	pid_t			server_pid;
+	unsigned char	*message;
 
 	if (argc != 3)
 	{
@@ -53,11 +59,15 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	server_pid = ft_atoi(argv[1]);
-	if (server_pid < 10 || kill(server_pid, 0) == -1)
+	if (server_pid <= 0 || kill(server_pid, 0) == -1)
 	{
 		ft_printf("Error: Invalid server PID.\n");
 		return (1);
 	}
-	send_message(server_pid, argv[2]);
+	signal_setup();
+	message = (unsigned char *)argv[2];
+	while (*message)
+		send_bits(server_pid, *message++);
+	send_bits(server_pid, '\0');
 	return (0);
 }

@@ -9,19 +9,19 @@ RM = rm -rf
 LIB = $(LIB_DIR)libft.a
 
 SERVER = server
-SERVER_SRC = $(SRC_DIR)server.c
+SERVER_SRC = $(SRC_DIR)$(SERVER).c
 SERVER_OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SERVER_SRC))
 
 CLIENT = client
-CLIENT_SRC = $(SRC_DIR)client.c
+CLIENT_SRC = $(SRC_DIR)$(CLIENT).c
 CLIENT_OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(CLIENT_SRC))
 
 SERVER_B = server_bonus
-SERVER_B_SRC = $(SRC_DIR)server_bonus.c
+SERVER_B_SRC = $(SRC_DIR)$(SERVER_B).c
 SERVER_B_OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SERVER_B_SRC))
 
 CLIENT_B = client_bonus
-CLIENT_B_SRC = $(SRC_DIR)client_bonus.c
+CLIENT_B_SRC = $(SRC_DIR)$(CLIENT_B).c
 CLIENT_B_OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(CLIENT_B_SRC))
 
 all: obj $(LIB) $(SERVER) $(CLIENT)
