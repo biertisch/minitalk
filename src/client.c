@@ -14,7 +14,7 @@
 
 volatile sig_atomic_t	g_ack = 0;
 
-static void	send_bits(pid_t server_pid, char c)
+static void	send_bits(pid_t server_pid, unsigned char c)
 {
 	unsigned int	bit;
 
