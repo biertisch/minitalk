@@ -1,1 +1,5 @@
-minitalk_overview.docx
+.vscode
+obj
+libft
+*.pdf
+*.docx

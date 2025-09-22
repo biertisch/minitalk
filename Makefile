@@ -1,61 +1,90 @@
-SRC_DIR = src/
-OBJ_DIR = obj/
-LIB_DIR = lib/
+SERVER			=	server
+CLIENT			=	client
+SERVER_B		=	server_bonus
+CLIENT_B		=	client_bonus
 
-CC = cc
-CFLAGS = -Wall -Werror -Wextra -Iinclude -I$(LIB_DIR)include
-RM = rm -rf
+SERVER_FILES	=	$(SERVER)
+CLIENT_FILES	=	$(CLIENT)
+SERVER_B_FILES	=	$(SERVER_B)
+CLIENT_B_FILES	=	$(CLIENT_B)
 
-LIB = $(LIB_DIR)libft.a
+SRC_DIR			=	src/
+OBJ_DIR			=	obj/
+INC_DIR			=	include/
+LIBFT_DIR		=	libft/
 
-SERVER = server
-SERVER_SRC = $(SRC_DIR)$(SERVER).c
-SERVER_OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SERVER_SRC))
+LIBFT_URL		=	https://github.com/biertisch/libft.git
+LIBFT			=	$(LIBFT_DIR)libft.a
 
-CLIENT = client
-CLIENT_SRC = $(SRC_DIR)$(CLIENT).c
-CLIENT_OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(CLIENT_SRC))
+SERVER_SRC 		=	$(addprefix $(SRC_DIR), $(addsuffix .c, $(SERVER_FILES)))
+CLIENT_SRC		=	$(addprefix $(SRC_DIR), $(addsuffix .c, $(CLIENT_FILES)))
+SERVER_B_SRC	=	$(addprefix $(SRC_DIR), $(addsuffix .c, $(SERVER_B_FILES)))
+CLIENT_B_SRC	=	$(addprefix $(SRC_DIR), $(addsuffix .c, $(CLIENT_B_FILES)))
 
-SERVER_B = server_bonus
-SERVER_B_SRC = $(SRC_DIR)$(SERVER_B).c
-SERVER_B_OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SERVER_B_SRC))
+SERVER_OBJ 		=	$(addprefix $(OBJ_DIR), $(addsuffix .o, $(SERVER_FILES)))
+CLIENT_OBJ		=	$(addprefix $(OBJ_DIR), $(addsuffix .o, $(CLIENT_FILES)))
+SERVER_B_OBJ	=	$(addprefix $(OBJ_DIR), $(addsuffix .o, $(SERVER_B_FILES)))
+CLIENT_B_OBJ	=	$(addprefix $(OBJ_DIR), $(addsuffix .o, $(CLIENT_B_FILES)))
 
-CLIENT_B = client_bonus
-CLIENT_B_SRC = $(SRC_DIR)$(CLIENT_B).c
-CLIENT_B_OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(CLIENT_B_SRC))
+CC				=	cc
+CFLAGS			=	-Wall -Werror -Wextra -g -I$(INC_DIR) -I$(LIBFT_DIR)$(INC_DIR)
+LFLAGS			=	-L$(LIBFT_DIR) -lft
+RM				=	rm -rf
 
-all: obj $(LIB) $(SERVER) $(CLIENT)
+SENTINEL		=	$(OBJ_DIR).compiled
 
-obj:
-	mkdir -p $(OBJ_DIR)
+all: $(SERVER) $(CLIENT)
+	@cat banner.txt
 
-$(LIB):
-	$(MAKE) -C $(LIB_DIR)
+bonus: $(SERVER_B) $(CLIENT_B)
+	@cat banner.txt
 
-$(SERVER): $(SERVER_OBJ)
-	$(CC) $(SERVER_OBJ) -o $@ $(LIB)
+$(SERVER): $(LIBFT) $(SERVER_OBJ)
+	@echo "Linking executable..."
+	@$(CC) $(SERVER_OBJ) $(LFLAGS) -o $@
 
-$(CLIENT): $(CLIENT_OBJ)
-	$(CC) $(CLIENT_OBJ) -o $@ $(LIB)
+$(CLIENT): $(LIBFT) $(CLIENT_OBJ)
+	@echo "Linking executable..."
+	@$(CC) $(CLIENT_OBJ) $(LFLAGS) -o $@
 
-bonus: obj $(LIB) $(SERVER_B) $(CLIENT_B)
+$(SERVER_B): $(LIBFT) $(SERVER_B_OBJ)
+	@echo "Linking executable..."
+	@$(CC) $(SERVER_B_OBJ) $(LFLAGS) -o $@
 
-$(SERVER_B): $(SERVER_B_OBJ)
-	$(CC) $(SERVER_B_OBJ) -o $@ $(LIB)
+$(CLIENT_B): $(LIBFT) $(CLIENT_B_OBJ)
+	@echo "Linking executable..."
+	@$(CC) $(CLIENT_B_OBJ) $(LFLAGS) -o $@
 
-$(CLIENT_B): $(CLIENT_B_OBJ)
-	$(CC) $(CLIENT_B_OBJ) -o $@ $(LIB)
+$(LIBFT): | $(LIBFT_DIR)
+	@echo "Building libft..."
+	@$(MAKE) -C $(LIBFT_DIR) extra > /dev/null
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c 
-	$(CC) $(CFLAGS) -c $< -o $@
+$(LIBFT_DIR):
+	@echo "Cloning libft..."
+	@git clone --quiet $(LIBFT_URL) $(LIBFT_DIR)
+
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR):
+	@mkdir -p $(OBJ_DIR)
+
+$(OBJ): $(SENTINEL)
+
+$(SENTINEL):
+	@echo "Compiling object files..."
+	@touch $@
 
 clean:
-	$(RM) $(OBJ_DIR)
-	$(MAKE) -C $(LIB_DIR) clean
+	@echo "Removing object files..."
+	@$(RM) $(OBJ_DIR)
+	@$(MAKE) -C $(LIBFT_DIR) clean > /dev/null
 
 fclean: clean
-	$(RM) $(SERVER) $(CLIENT) $(SERVER_B) $(CLIENT_B)
-	$(MAKE) -C $(LIB_DIR) fclean
+	@echo "Removing executable and libraries..."
+	@$(RM) $(SERVER) $(CLIENT) $(SERVER_B) $(CLIENT_B)
+	@$(MAKE) -C $(LIBFT_DIR) fclean > /dev/null
+	@$(RM) $(LIBFT_DIR)
 
 re: fclean all
 
