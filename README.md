@@ -41,7 +41,7 @@ make bonus	# bonus
 ---
 ### Usage
 
-Start the server first. It will print its PID, whcih the client uses to connect.
+Start the server first. It will print its PID, which the client uses to connect.
 
 ```
 ./server								# server
