@@ -54,7 +54,7 @@ Start the server first. It will print its PID, which the client uses to connect.
 ---
 ### About 42
 
-42 is a computer science school founded in Paris in 2013. It follows a project-based, peer-to-peer pedagogy focused on mid-level programming and algorithmic thinking.
+Founded in 2013, 42 is a global network of schools providing high-quality, scalable software engineering education accessible to anyone motivated to learn. Its project-based, peer-to-peer curriculum emphasizes hands-on programming, algorithmic thinking, and systems-level problem solving.
 
 ---
 ### License & Contact
